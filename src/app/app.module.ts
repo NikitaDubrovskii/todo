@@ -6,6 +6,7 @@ import { CategoryComponent } from './model/category/category.component';
 import { PriorityComponent } from './model/priority/priority.component';
 import { TaskComponent } from './model/task/task.component';
 import { TestDataComponent } from './data/test-data/test-data.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { TestDataComponent } from './data/test-data/test-data.component';
     TestDataComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
