@@ -2,21 +2,18 @@ import { Injectable } from '@angular/core';
 import {Category} from "../model/category";
 import {TestData} from "../data/test-data";
 import { Task } from '../model/task';
-import {Subject} from "rxjs";
+import {BehaviorSubject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataHandlerService {
 
-  taskSubject = new Subject<Task[]>()
+  taskSubject = new BehaviorSubject<Task[]>(TestData.tasks)
+  categoriesSubject = new BehaviorSubject<Category[]>(TestData.categories)
 
   constructor() {
-
-  }
-
-  getCategories(): Category[] {
-    return TestData.categories
+    this.fillTasks()
   }
 
   fillTasks() {
