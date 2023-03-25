@@ -2,25 +2,29 @@ import { Injectable } from '@angular/core';
 import {Category} from "../model/category";
 import {TestData} from "../data/test-data";
 import { Task } from '../model/task';
+import {Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataHandlerService {
 
-  constructor() { }
+  taskSubject = new Subject<Task[]>()
+
+  constructor() {
+
+  }
 
   getCategories(): Category[] {
     return TestData.categories
   }
 
-  getTasks(): Task[] {
-    return TestData.tasks
+  fillTasks() {
+    this.taskSubject.next(TestData.tasks)
   }
 
-  getTasksByCategory(category: Category): Task[] {
+  fillTasksByCategory(category: Category) {
     const tasks = TestData.tasks.filter(task => task.category === category)
-    console.log(tasks)
-    return tasks
+    this.taskSubject.next(tasks)
   }
 }
