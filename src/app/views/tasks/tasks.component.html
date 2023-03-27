@@ -20,7 +20,7 @@
 
       <ng-container matColumnDef="title">
         <th *matHeaderCellDef mat-header-cell mat-sort-header="title"> Название</th>
-        <td class="col-title pointer" *matCellDef="let task" [class.completed]="task.completed" mat-cell (click)="onClickTask(task)">
+        <td class="col-title pointer" *matCellDef="let task" [class.completed]="task.completed" mat-cell (click)="openEditTaskDialog(task)">
           {{task.title}}
         </td>
       </ng-container>
