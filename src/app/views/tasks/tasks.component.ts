@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import { Task } from 'src/app/model/task';
 import {DataHandlerService} from "../../service/data-handler.service";
 import {MatTableDataSource} from "@angular/material/table";
@@ -10,7 +10,7 @@ import {MatSort} from "@angular/material/sort";
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.css']
 })
-export class TasksComponent implements OnInit, AfterViewInit{
+export class TasksComponent implements OnInit {
 
   displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category'];
   dataSource: MatTableDataSource<Task> = new MatTableDataSource<Task>();
@@ -20,19 +20,25 @@ export class TasksComponent implements OnInit, AfterViewInit{
   // @ts-ignore
   @ViewChild(MatSort, {static: false}) sort: MatSort;
 
-  tasks: Task[] = [];
+  // @ts-ignore
+  tasks: Task[];
+
+  @Input('tasks')
+  set setTasks(tasks: Task[]) {
+    this.tasks = tasks;
+    this.fillTable();
+  }
+
+  @Output()
+  updateTask = new EventEmitter<Task>();
 
   constructor(private dataHandler: DataHandlerService) {
   }
 
   ngOnInit() {
-    this.dataHandler.tasksSubject.subscribe(tasks => this.tasks = tasks);
+    //this.dataHandler.getAllTasks().subscribe(tasks => this.tasks = tasks);
     this.dataSource = new MatTableDataSource();
-    this.refreshTable();
-  }
-
-  ngAfterViewInit() {
-    this.addTableObjects();
+    this.fillTable();
   }
 
   toggleTaskCompleted(task: Task) {
@@ -49,7 +55,11 @@ export class TasksComponent implements OnInit, AfterViewInit{
     return '#fff';
   }
 
-  private refreshTable() {
+  private fillTable() {
+    if (!this.dataSource) {
+      return;
+    }
+
     this.dataSource.data = this.tasks;
     this.addTableObjects();
 
@@ -75,6 +85,10 @@ export class TasksComponent implements OnInit, AfterViewInit{
   private addTableObjects() {
     this.dataSource.sort = this.sort;
     this.dataSource.paginator = this.paginator;
+  }
+
+  onClickTask(task: Task) {
+    this.updateTask.emit(task);
   }
 
 }
