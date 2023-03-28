@@ -44,7 +44,8 @@ import { ConfirmDialogComponent } from './dialog/confirm-dialog/confirm-dialog.c
   ],
   providers: [],
   entryComponents: [
-    EditTaskDialogComponent
+    EditTaskDialogComponent,
+    ConfirmDialogComponent
   ],
   bootstrap: [AppComponent]
 })

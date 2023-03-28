@@ -31,12 +31,16 @@
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-raised-button color="primary"
-          (click)="onConfirm()"
+  <button mat-raised-button color="primary" (click)="onConfirm()"
           [disabled]="inputTitle.value.trim().length == 0">
     Сохранить
   </button>
+
   <button mat-raised-button (click)="onCancel()">
     Отмена
+  </button>
+
+  <button mat-button class="red" (click)="delete()">
+    Удалить задачу
   </button>
 </mat-dialog-actions>
