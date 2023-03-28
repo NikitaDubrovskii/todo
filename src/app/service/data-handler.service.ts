@@ -6,6 +6,7 @@ import {BehaviorSubject, Observable} from "rxjs";
 import {TaskDaoArray} from "../data/dao/impl/task-dao-array";
 import {CategoryDaoArray} from "../data/dao/impl/category-dao-array";
 import {Priority} from "../model/priority";
+import {PriorityDaoArray} from "../data/dao/impl/priority-dao-array";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,7 @@ export class DataHandlerService {
 
   private taskDaoArray = new TaskDaoArray();
   private categoryDaoArray = new CategoryDaoArray();
+  private priorityDaoArray = new PriorityDaoArray();
 
   constructor() {
   }
@@ -24,6 +26,10 @@ export class DataHandlerService {
 
   getAllCategories(): Observable<Category[]> {
     return this.categoryDaoArray.getAll();
+  }
+
+  getAllPriorities(): Observable<Priority[]> {
+    return this.priorityDaoArray.getAll();
   }
 
   searchTasks(category: Category, searchText: string, status: boolean, priority: Priority): Observable<Task[]> {
