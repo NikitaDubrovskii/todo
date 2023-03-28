@@ -25,9 +25,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .mat-mdc-dialog-container {
-  width: 500px !important;
+  width: 650px !important;
 }
 
 .red {
-  color: #ff0000;
+  --mdc-text-button-label-text-color: #ff0000 !important;
+}
+
+.green {
+  --mdc-text-button-label-text-color: green !important;
 }
