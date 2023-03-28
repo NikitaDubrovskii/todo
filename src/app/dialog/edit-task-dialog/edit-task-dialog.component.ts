@@ -29,6 +29,8 @@ export class EditTaskDialogComponent implements OnInit{
   tmpCategory: Category;
   // @ts-ignore
   tmpPriority: Priority;
+  // @ts-ignore
+  tmpDate: Date | any;
 
   constructor(private dialogRef: MatDialogRef<EditTaskDialogComponent>,
               @Inject(MAT_DIALOG_DATA) private data: [Task, string],
@@ -45,6 +47,8 @@ export class EditTaskDialogComponent implements OnInit{
     this.tmpCategory = this.task.category;
     // @ts-ignore
     this.tmpPriority = this.task.priority;
+    // @ts-ignore
+    this.tmpDate = this.task.date;
 
     this.dataHandler.getAllPriorities().subscribe(items => this.priorities = items);
     this.dataHandler.getAllCategories().subscribe(items => this.categories = items);
@@ -54,6 +58,7 @@ export class EditTaskDialogComponent implements OnInit{
     this.task.title = this.tmpTitle;
     this.task.category = this.tmpCategory;
     this.task.priority = this.tmpPriority;
+    this.task.date = this.tmpDate;
 
     this.dialogRef.close(this.task);
   }
