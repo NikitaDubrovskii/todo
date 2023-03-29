@@ -16,6 +16,7 @@ export class CategoriesComponent implements OnInit {
   @Output()
   selectCategory = new EventEmitter<Category>();
 
+  @Input()
   // @ts-ignore
   selectedCategory: Category;
 
@@ -27,7 +28,7 @@ export class CategoriesComponent implements OnInit {
     //   .subscribe(categories => this.categories = categories);
   }
 
-  showTasksByCategory(category: Category) {
+  showTasksByCategory(category: Category | any): void {
     if (this.selectedCategory === category) {
       return;
     }

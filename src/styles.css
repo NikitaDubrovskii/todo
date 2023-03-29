@@ -35,3 +35,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 .green {
   --mdc-text-button-label-text-color: green !important;
 }
+
+.link {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.line {
+  border-bottom: 1px solid #dadada;
+  padding-top: 20px;
+}
