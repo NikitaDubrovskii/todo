@@ -8,6 +8,7 @@ import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-d
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
 import {Category} from "../../model/category";
+import {Priority} from "../../model/priority";
 
 @Component({
   selector: 'app-tasks',
@@ -26,11 +27,18 @@ export class TasksComponent implements OnInit {
 
   // @ts-ignore
   tasks: Task[];
+  // @ts-ignore
+  priorities: Priority[];
 
   @Input('tasks')
   set setTasks(tasks: Task[]) {
     this.tasks = tasks;
     this.fillTable();
+  }
+
+  @Input('priorities')
+  set setPriorities(priorities: Priority[]) {
+    this.priorities = priorities;
   }
 
   @Output()
@@ -39,6 +47,19 @@ export class TasksComponent implements OnInit {
   deleteTask = new EventEmitter<Task>();
   @Output()
   selectCategory = new EventEmitter<Category>();
+  @Output()
+  filterByTitle = new EventEmitter<string>();
+  @Output()
+  filterByStatus = new EventEmitter<boolean>();
+  @Output()
+  filterByPriority = new EventEmitter<Priority>();
+
+  // @ts-ignore
+  searchTaskText: string;
+  // @ts-ignore
+  selectedStatusFilter: boolean;
+  // @ts-ignore
+  selectedPriorityFilter: Priority;
 
   constructor(private dataHandler: DataHandlerService,
               private dialog: MatDialog) {
@@ -144,5 +165,26 @@ export class TasksComponent implements OnInit {
 
   onSelectCategory(category: Category): void {
     this.selectCategory.emit(category);
+  }
+
+  onFilterByTitle(): void {
+    this.filterByTitle.emit(this.searchTaskText);
+  }
+
+  onFilterByStatus(value: boolean | any) {
+    // @ts-ignore
+    //let value = (event?.target as HTMLInputElement).value as boolean;
+    if (value !== this.selectedStatusFilter) {
+      this.selectedStatusFilter = value;
+      // @ts-ignore
+      this.filterByStatus.emit(this.selectedStatusFilter);
+    }
+  }
+
+  onFilterByPriority(value: Priority | any) {
+    if (value !== this.selectedPriorityFilter) {
+      this.selectedPriorityFilter = value;
+      this.filterByPriority.emit(this.selectedPriorityFilter);
+    }
   }
 }
