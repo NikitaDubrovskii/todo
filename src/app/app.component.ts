@@ -36,6 +36,7 @@ export class AppComponent implements OnInit {
   uncompletedCountInCategory: number;
   // @ts-ignore
   uncompletedTotalTasksCount: number;
+  showStat = true;
 
   constructor(private dataHandler: DataHandlerService) {
   }
@@ -149,4 +150,7 @@ export class AppComponent implements OnInit {
       });
   }
 
+  toggleStat(showStat: boolean) {
+    this.showStat = showStat;
+  }
 }

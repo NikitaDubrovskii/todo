@@ -16,6 +16,9 @@ export class StatComponent implements OnInit {
   // @ts-ignore
   @Input() uncompleteTasksInCategory: number;
 
+  // @ts-ignore
+  @Input() showStat: boolean;
+
   constructor() {
 
   }
