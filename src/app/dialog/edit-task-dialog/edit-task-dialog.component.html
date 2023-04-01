@@ -6,7 +6,7 @@
     <input #inputTitle matInput [(ngModel)]="tmpTitle"
            (keydown.enter)="onConfirm()">
     <button *ngIf="tmpTitle.trim().length > 0"
-            MatButton matSuffix mat-icon-button aria-label="Clear"
+            matSuffix mat-icon-button aria-label="Clear"
             (click)="tmpTitle = ''"
             class="size25">
       <mat-icon>clear</mat-icon>
@@ -37,7 +37,7 @@
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker></mat-datepicker>
 
-    <button *ngIf="inputDate.value.trim().length > 0" MatButton
+    <button *ngIf="inputDate.value.trim().length > 0"
             matSuffix mat-icon-button aria-label="Clear"
             (click)="tmpDate = null" class="size25">
       <mat-icon>clear</mat-icon>
@@ -58,15 +58,15 @@
   </div>
 
   <div class="col-md-7 col 12 text-right">
-    <button mat-button class="green" *ngIf="!task.completed" (click)="complete()">
+    <button mat-button class="green" *ngIf="!task.completed && canActivateDesactivate()" (click)="complete()">
       Завершить задачу
     </button>
 
-    <button mat-button class="green" *ngIf="task.completed" (click)="activate()">
+    <button mat-button class="green" *ngIf="task.completed && canActivateDesactivate()" (click)="activate()">
       Активировать задачу
     </button>
 
-    <button mat-button class="red" (click)="delete()">
+    <button mat-button class="red" *ngIf="canDelete()" (click)="delete()">
       Удалить задачу
     </button>
   </div>

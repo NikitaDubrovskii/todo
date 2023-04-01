@@ -3,6 +3,7 @@ import {DataHandlerService} from "../../service/data-handler.service";
 import {Category} from "../../model/category";
 import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edit-category-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
+import {OpenType} from "../../dialog/open-type";
 
 @Component({
   selector: 'app-categories',
@@ -21,6 +22,8 @@ export class CategoriesComponent implements OnInit {
   deleteCategory = new EventEmitter<Category>();
   @Output()
   updateCategory = new EventEmitter<Category>();
+  @Output()
+  addCategory = new EventEmitter<string>();
 
   @Input()
   // @ts-ignore
@@ -52,7 +55,7 @@ export class CategoriesComponent implements OnInit {
 
   openEditDialog(category: Category) {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
-      data: [category.title, 'Редактирование категории'],
+      data: [category.title, 'Редактирование категории', OpenType.EDIT],
       width: '400px'
     });
 
@@ -65,6 +68,20 @@ export class CategoriesComponent implements OnInit {
         category.title = result as string;
         this.updateCategory.emit(category);
         return;
+      }
+    });
+  }
+
+  openAddDialog(): void {
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
+      data: ['', 'Добавление категории', OpenType.ADD],
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // @ts-ignore
+        this.addCategory.emit(result as string);
       }
     });
   }
