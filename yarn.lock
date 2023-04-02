@@ -156,7 +156,7 @@
     symbol-observable "4.0.0"
     yargs "17.6.2"
 
-"@angular/common@^15.0.0 || ^16.0.0", "@angular/common@^15.2.0", "@angular/common@15.2.3":
+"@angular/common@^15.0.0 || ^16.0.0", "@angular/common@^15.2.0", "@angular/common@>=9.0.0", "@angular/common@15.2.3":
   version "15.2.3"
   resolved "https://registry.npmjs.org/@angular/common/-/common-15.2.3.tgz"
   integrity sha512-J68CSb57XadC2weHw7kmHjCdrHNgxPv8ZW6KlnmYvIRJrkKsZuCl+PvFe90VMDvHtlBnSnz8sjAPqoUxesMRNg==
@@ -186,14 +186,14 @@
   dependencies:
     tslib "^2.3.0"
 
-"@angular/core@^15.0.0 || ^16.0.0", "@angular/core@^15.2.0", "@angular/core@15.2.3":
+"@angular/core@^15.0.0 || ^16.0.0", "@angular/core@^15.2.0", "@angular/core@>=9.0.0", "@angular/core@15.2.3":
   version "15.2.3"
   resolved "https://registry.npmjs.org/@angular/core/-/core-15.2.3.tgz"
   integrity sha512-e+d6upOqAyqE7MxxRthd1ZJILSKX+hXHCmujc48id8G3zhP0tD59iZ03KgUe8RMvXMlSBUhwOwDX39tr701eig==
   dependencies:
     tslib "^2.3.0"
 
-"@angular/forms@^15.0.0 || ^16.0.0", "@angular/forms@^15.2.0":
+"@angular/forms@^15.0.0 || ^16.0.0", "@angular/forms@^15.2.0", "@angular/forms@>=9.0.0":
   version "15.2.3"
   resolved "https://registry.npmjs.org/@angular/forms/-/forms-15.2.3.tgz"
   integrity sha512-+ZcmpmIah87JsPF2Nvh2QoklgW9hWXp4azMPrXsuxackZXKTl/xl8NY32WABQndbhVjtSj08SHCuKd0rPHvpGw==
@@ -5020,6 +5020,13 @@ neo-async@^2.6.2:
   version "2.6.2"
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
+
+ngx-color-picker@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.npmjs.org/ngx-color-picker/-/ngx-color-picker-14.0.0.tgz"
+  integrity sha512-w28zx2DyVpIJeNsTB3T2LUI4Ed/Ujf5Uhxuh0dllputfpxXwZG9ocSJM/0L67+fxA3UnfvvXVZNUX1Ny5nZIIw==
+  dependencies:
+    tslib "^2.3.0"
 
 node-forge@^1:
   version "1.3.1"
