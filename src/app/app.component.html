@@ -1,15 +1,24 @@
 <div class="wrapper ">
 
-  <app-categories (selectCategory)="onSelectCategory($event)"
-                  (deleteCategory)="onDeleteCategory($event)"
-                  (updateCategory)="onUpdateCategory($event)"
-                  (addCategory)="onAddCategory($event)"
-                  (searchCategory)="onSearchCategory($event)"
-                  [selectedCategory]="selectedCategory"
-                  [categoryMap]="categoryMap"
-                  [uncompletedTotal]="uncompletedTotalTasksCount"
-                  [categories]="categories">
-  </app-categories>
+  <div class="sidebar"
+       data-color="purple"
+       data-step="1"
+       data-intro="Фильтрация задач, добавление, удаление, редактирование категорий"
+       data-position='right'>
+
+    <app-categories (selectCategory)="onSelectCategory($event)"
+                    (deleteCategory)="onDeleteCategory($event)"
+                    (updateCategory)="onUpdateCategory($event)"
+                    (addCategory)="onAddCategory($event)"
+                    (searchCategory)="onSearchCategory($event)"
+                    [selectedCategory]="selectedCategory"
+                    [categoryMap]="categoryMap"
+                    [uncompletedTotal]="uncompletedTotalTasksCount"
+                    [categories]="categories">
+    </app-categories>
+
+  </div>
+
 
   <div class="main-panel">
 
@@ -25,12 +34,17 @@
     <div class="content">
       <div class="container-fluid">
 
-        <app-stat
-          [totalTasksInCategory]="totalTasksCountInCategory"
-          [completeTasksInCategory]="completedCountInCategory"
-          [uncompleteTasksInCategory]="uncompletedCountInCategory"
-          [showStat]="showStat">
-        </app-stat>
+        <div data-step="2"
+             data-intro="Список всех задач со статистикой"
+             data-position='top'>
+
+          <app-stat
+            [totalTasksInCategory]="totalTasksCountInCategory"
+            [completeTasksInCategory]="completedCountInCategory"
+            [uncompleteTasksInCategory]="uncompletedCountInCategory"
+            [showStat]="showStat">
+          </app-stat>
+        </div>
 
         <div class="row">
           <div class="col-12">
@@ -52,9 +66,9 @@
       </div>
     </div>
 
-  <app-footer>
+    <app-footer>
 
-  </app-footer>
+    </app-footer>
 
   </div>
 </div>
