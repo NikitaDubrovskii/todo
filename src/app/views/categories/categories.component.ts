@@ -12,9 +12,19 @@ import {OpenType} from "../../dialog/open-type";
 })
 export class CategoriesComponent implements OnInit {
 
-  @Input()
   // @ts-ignore
-  categories: Category[];
+  @Input() categories: Category[];
+
+  // @ts-ignore
+  @Input() selectedCategory: Category;
+
+  // @ts-ignore
+  @Input() uncompletedTotal: number;
+
+  @Input('categoryMap')
+  set setCategoryMap(categoryMap: Map<Category, number>) {
+    this.selectedCategoryMap = categoryMap;
+  }
 
   @Output()
   selectCategory = new EventEmitter<Category>();
@@ -27,13 +37,13 @@ export class CategoriesComponent implements OnInit {
   @Output()
   searchCategory = new EventEmitter<string>();
 
-  @Input()
-  // @ts-ignore
-  selectedCategory: Category;
+
   // @ts-ignore
   indexMouseMove: number;
   // @ts-ignore
   searchCategoryTitle: string;
+  // @ts-ignore
+  selectedCategoryMap: Map<Category, number>;
 
   constructor(private dataHandler: DataHandlerService,
               private dialog: MatDialog) {
