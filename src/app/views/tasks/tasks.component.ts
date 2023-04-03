@@ -10,6 +10,7 @@ import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog
 import {Category} from "../../model/category";
 import {Priority} from "../../model/priority";
 import {OpenType} from "../../dialog/open-type";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
   selector: 'app-tasks',
@@ -67,8 +68,13 @@ export class TasksComponent implements OnInit {
   // @ts-ignore
   selectedPriorityFilter: Priority;
 
+  // @ts-ignore
+  isMobile: boolean;
+
   constructor(private dataHandler: DataHandlerService,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private deviceService: DeviceDetectorService) {
+    this.isMobile = deviceService.isMobile();
   }
 
   ngOnInit(): void {
@@ -206,5 +212,12 @@ export class TasksComponent implements OnInit {
         this.addTask.emit(task);
       }
     });
+  }
+
+  getMobilePriorityBgColor(task: Task) {
+    if (task.priority != null && !task.completed) {
+      return task.priority.color;
+    }
+    return 'none'
   }
 }

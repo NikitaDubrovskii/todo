@@ -33,6 +33,7 @@ import { SettingsDialogComponent } from './dialog/settings-dialog/settings-dialo
 import { PrioritiesComponent } from './views/priorities/priorities.component';
 import { EditPriorityDialogComponent } from './dialog/edit-priority-dialog/edit-priority-dialog.component';
 import {SidebarModule} from "ng-sidebar";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 registerLocaleData(localeRu);
 
@@ -73,7 +74,9 @@ registerLocaleData(localeRu);
     ColorPickerModule,
     SidebarModule,
   ],
-  providers: [],
+  providers: [
+    DeviceDetectorService
+  ],
   entryComponents: [
     EditTaskDialogComponent,
     ConfirmDialogComponent,

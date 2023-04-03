@@ -53,3 +53,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 app-header {
   width: 100%;
 }
+
+.mat-mdc-raised-button {
+  z-index: 0 !important;
+}

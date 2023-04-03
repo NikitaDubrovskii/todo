@@ -5,6 +5,7 @@ import {Category} from "./model/category";
 import {Priority} from "./model/priority";
 import {concatMap, map, zip} from "rxjs";
 import {IntroService} from "./service/intro.service";
+import {DeviceDetectorService} from "ngx-device-detector";
 
 @Component({
   selector: 'app-root',
@@ -51,8 +52,17 @@ export class AppComponent implements OnInit {
   // @ts-ignore
   showBackdrop: boolean;
 
+  // @ts-ignore
+  isMobile: boolean;
+  // @ts-ignore
+  isDesctop: boolean;
+
   constructor(private dataHandler: DataHandlerService,
-              private introService: IntroService) {
+              private introService: IntroService,
+              private deviceService: DeviceDetectorService) {
+    this.isMobile = deviceService.isMobile();
+    this.isDesctop = deviceService.isDesktop();
+    this.showStat = true ? !this.isMobile : false;
     this.setMenuValues();
   }
 
@@ -62,7 +72,13 @@ export class AppComponent implements OnInit {
     this.fillCategories();
     // @ts-ignore
     this.onSelectCategory(null);
-    this.introService.startIntroJS(true);
+
+    if (!this.isMobile && !this.isDesctop) {
+      this.introService.startIntroJS(true);
+    }
+
+    console.log(this.isMobile)
+    console.log(this.isDesctop)
   }
 
   fillCategories(): void {
@@ -220,8 +236,15 @@ export class AppComponent implements OnInit {
 
   setMenuValues(): void {
     this.menuPosition = 'left';
-    this.menuOpened = true;
-    this.menuMode = 'push';
-    this.showBackdrop = false;
+
+    if (this.isMobile){
+      this.menuOpened = false;
+      this.menuMode = 'over';
+      this.showBackdrop = true;
+    } else {
+      this.menuOpened = true;
+      this.menuMode = 'push';
+      this.showBackdrop = false;
+    }
   }
 }
