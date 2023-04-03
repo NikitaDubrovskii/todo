@@ -42,8 +42,18 @@ export class AppComponent implements OnInit {
   uncompletedTotalTasksCount: number;
   showStat = true;
 
+  // @ts-ignore
+  menuOpened: boolean;
+  // @ts-ignore
+  menuMode: any;
+  // @ts-ignore
+  menuPosition: any;
+  // @ts-ignore
+  showBackdrop: boolean;
+
   constructor(private dataHandler: DataHandlerService,
               private introService: IntroService) {
+    this.setMenuValues();
   }
 
   ngOnInit(): void {
@@ -198,5 +208,20 @@ export class AppComponent implements OnInit {
 
   toggleStat(showStat: boolean) {
     this.showStat = showStat;
+  }
+
+  toggleMenu(): void {
+    this.menuOpened = !this.menuOpened;
+  }
+
+  onClosedMenu(): void {
+    this.menuOpened = false;
+  }
+
+  setMenuValues(): void {
+    this.menuPosition = 'left';
+    this.menuOpened = true;
+    this.menuMode = 'push';
+    this.showBackdrop = false;
   }
 }
