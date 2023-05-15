@@ -1,16 +1,16 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import { Task } from 'src/app/model/task';
-import {DataHandlerService} from "../../service/data-handler.service";
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Task} from 'src/app/model/task';
 import {MatTableDataSource} from "@angular/material/table";
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {EditTaskDialogComponent} from "../../dialog/edit-task-dialog/edit-task-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../dialog/confirm-dialog/confirm-dialog.component";
 import {Category} from "../../model/category";
 import {Priority} from "../../model/priority";
-import {OpenType} from "../../dialog/open-type";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {TaskSearchValues} from "../../data/dao/search/SearchObjects";
+import {DialogAction} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-tasks',
@@ -18,24 +18,26 @@ import {DeviceDetectorService} from "ngx-device-detector";
   styleUrls: ['./tasks.component.css']
 })
 export class TasksComponent implements OnInit {
-
-  displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priority', 'category', 'operations', 'select'];
-  dataSource: MatTableDataSource<Task> = new MatTableDataSource<Task>();
-
   // @ts-ignore
-  @ViewChild(MatPaginator, {static: false}) paginator: MatPaginator;
-  // @ts-ignore
-  @ViewChild(MatSort, {static: false}) sort: MatSort;
+  @Input() totalTasksFounded: number;
 
   // @ts-ignore
-  tasks: Task[];
+  @Input() selectedCategory: Category;
+
   // @ts-ignore
-  priorities: Priority[];
+  @Input() showSearch: boolean;
 
   @Input('tasks')
   set setTasks(tasks: Task[]) {
     this.tasks = tasks;
-    this.fillTable();
+    this.assignTableSource();
+  }
+
+  @Input('taskSearchValues')
+  set setTaskSearchValues(taskSearchValues: TaskSearchValues) {
+    this.taskSearchValues = taskSearchValues;
+    this.initSearchValues();
+    this.initSortDirectionIcon();
   }
 
   @Input('priorities')
@@ -43,114 +45,131 @@ export class TasksComponent implements OnInit {
     this.priorities = priorities;
   }
 
-  // @ts-ignore
-  @Input() selectedCategory: Category;
+  @Input('categories')
+  set setCategories(categories: Category[]) {
+    this.categories = categories;
+  }
 
   @Output()
-  updateTask = new EventEmitter<Task>();
+  addTask = new EventEmitter<Task>();
   @Output()
   deleteTask = new EventEmitter<Task>();
   @Output()
+  updateTask = new EventEmitter<Task>();
+  @Output()
   selectCategory = new EventEmitter<Category>();
   @Output()
-  filterByTitle = new EventEmitter<string>();
+  paging = new EventEmitter<PageEvent>;
   @Output()
-  filterByStatus = new EventEmitter<boolean>();
+  searchAction = new EventEmitter<TaskSearchValues>();
   @Output()
-  filterByPriority = new EventEmitter<Priority>();
-  @Output()
-  addTask = new EventEmitter<Task>();
+  toggleSearch = new EventEmitter<boolean>;
 
   // @ts-ignore
-  searchTaskText: string;
+  tasks: Task[];
   // @ts-ignore
-  selectedStatusFilter: boolean;
+  priorities: Priority[];
   // @ts-ignore
-  selectedPriorityFilter: Priority;
+  categories: Category[];
+
+  displayedColumns: string[] = ['color', 'id', 'title', 'date', 'priorities', 'categories', 'operations', 'select'];
+  dataSource: MatTableDataSource<Task> = new MatTableDataSource<Task>();
+
+  changed = false;
+
+  readonly defaultSortColumn = 'title';
+  readonly defaultSortDirection = 'asc';
+
+  // @ts-ignore
+  filterTitle: string;
+  // @ts-ignore
+  filterCompleted: number | null;
+  // @ts-ignore
+  filterPriorityId: number | null;
+  // @ts-ignore
+  filterSortColumn: string;
+  // @ts-ignore
+  filterSortDirection: string;
 
   // @ts-ignore
   isMobile: boolean;
 
-  constructor(private dataHandler: DataHandlerService,
-              private dialog: MatDialog,
+  taskSearchValues = new TaskSearchValues();
+
+  // @ts-ignore
+  sortIconName: string;
+
+  readonly iconNameDown = 'arrow_downward';
+  readonly iconNameUp = 'arrow_upward';
+
+  readonly colorCompletedTask = '#F8F9FA';
+  readonly colorWhite = '#fff';
+
+  constructor(private dialog: MatDialog,
               private deviceService: DeviceDetectorService) {
     this.isMobile = deviceService.isMobile();
   }
 
   ngOnInit(): void {
-    //this.dataHandler.getAllTasks().subscribe(tasks => this.tasks = tasks);
-    this.dataSource = new MatTableDataSource();
-    // @ts-ignore
-    this.onSelectCategory(null);
+
   }
 
-  getPriorityColor(task: Task): string {
-    if (task.completed) {
-      return '#F8F9FA';
-    }
-    if (task.priority && task.priority.color) {
-      return task.priority.color;
-    }
-    return '#fff';
-  }
-
-  private fillTable(): void {
+  assignTableSource(): void {
     if (!this.dataSource) {
       return;
     }
-
     this.dataSource.data = this.tasks;
-    this.addTableObjects();
+    console.log(this.tasks)
+  }
 
+  openAddDialog(): void {
     // @ts-ignore
-    this.dataSource.sortingDataAccessor = (task, colName) => {
-      switch (colName) {
-        case 'priority' : {
-          return task.priority ? task.priority.id : null;
-        }
-        case 'category' : {
-          return task.category ? task.category.title : null;
-        }
-        case 'date' : {
-          return task.date ? task.date : null;
-        }
-        case 'title' : {
-          return task.title;
-        }
-      }
-    }
-  }
+    const task = new Task(null, '', 0, null, this.selectedCategory);
 
-  private addTableObjects(): void {
-    this.dataSource.sort = this.sort;
-    this.dataSource.paginator = this.paginator;
-  }
-
-  openEditTaskDialog(task: Task): void {
     const dialogRef = this.dialog.open(EditTaskDialogComponent, {
-      data: [task, 'Редактирование задачи', OpenType.EDIT],
+      data: [task, 'Добавление задачи', this.categories, this.priorities]
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!(result)) {
+        return;
+      }
+
+      if (result.action === DialogAction.SAVE) {
+        this.addTask.emit(task);
+      }
+    });
+  }
+
+  openEditDialog(task: Task): void {
+    const dialogRef = this.dialog.open(EditTaskDialogComponent, {
+      data: [task, 'Редактирование задачи', this.categories, this.priorities],
       autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result === 'complete') {
-        task.completed = true;
-        this.updateTask.emit(task);
+      if (!(result)) {
         return;
       }
 
-      if (result === 'activate') {
-        task.completed = false;
-        this.updateTask.emit(task);
-        return;
-      }
-
-      if (result === 'delete') {
+      if (result.action === DialogAction.DELETE) {
         this.deleteTask.emit(task);
         return;
       }
 
-      if (result as Task) {
+      if (result.action === DialogAction.COMPLETE) {
+        task.completed = 1;
+        this.updateTask.emit(task);
+      }
+
+
+      if (result.action === DialogAction.ACTIVATE) {
+        task.completed = 0;
+        this.updateTask.emit(task);
+        return;
+      }
+
+      if (result.action === DialogAction.SAVE) {
         this.updateTask.emit(task);
         return;
       }
@@ -165,59 +184,129 @@ export class TasksComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (!(result)) {
+        return;
+      }
+
+      if (result.action === DialogAction.OK) {
         this.deleteTask.emit(task);
       }
     });
   }
 
-  onToggleStatus(task: Task): void {
-    task.completed = !task.completed;
+  onToggleCompleted(task: Task): void {
+    if (task.completed === 0) {
+      task.completed = 1;
+    } else {
+      task.completed = 0;
+    }
+
     this.updateTask.emit(task);
   }
 
-  onSelectCategory(category: Category): void {
-    this.selectCategory.emit(category);
-  }
-
-  onFilterByTitle(): void {
-    this.filterByTitle.emit(this.searchTaskText);
-  }
-
-  onFilterByStatus(value: boolean | any) {
-    // @ts-ignore
-    //let value = (event?.target as HTMLInputElement).value as boolean;
-    if (value !== this.selectedStatusFilter) {
-      this.selectedStatusFilter = value;
-      // @ts-ignore
-      this.filterByStatus.emit(this.selectedStatusFilter);
+  getPriorityColor(task: Task) {
+    if (task.completed) {
+      return this.colorCompletedTask;
     }
-  }
 
-  onFilterByPriority(value: Priority | any) {
-    if (value !== this.selectedPriorityFilter) {
-      this.selectedPriorityFilter = value;
-      this.filterByPriority.emit(this.selectedPriorityFilter);
+    if (task.priority && task.priority.color) {
+      return task.priority.color;
     }
+
+    return this.colorWhite;
   }
 
-  openAddTaskDialog(): void {
-    // @ts-ignore
-    const task = new Task(null, '', false, null, this.selectedCategory);
-
-    const dialogRef = this.dialog.open(EditTaskDialogComponent, {data: [task, 'Добавление задачи', OpenType.ADD]});
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.addTask.emit(task);
-      }
-    });
-  }
-
-  getMobilePriorityBgColor(task: Task) {
+  getPriorityBgColor(task: Task) {
     if (task.priority != null && !task.completed) {
       return task.priority.color;
     }
-    return 'none'
+
+    return 'none';
+  }
+
+  pageChanged(pageEvent: PageEvent) {
+    this.paging.emit(pageEvent);
+  }
+
+  initSearch() {
+    // сохраняем значения перед поиском
+    this.taskSearchValues.title = this.filterTitle;
+    this.taskSearchValues.completed = this.filterCompleted;
+    this.taskSearchValues.priorityId = this.filterPriorityId;
+    this.taskSearchValues.sortColumn = this.filterSortColumn;
+    this.taskSearchValues.sortDirection = this.filterSortDirection;
+
+    this.searchAction.emit(this.taskSearchValues);
+
+    this.changed = false; // сбрасываем флаг изменения
+  }
+
+  checkFilterChanged() {
+    this.changed = false;
+
+    if (this.taskSearchValues.title !== this.filterTitle) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.completed !== this.filterCompleted) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.priorityId !== this.filterPriorityId) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.sortColumn !== this.filterSortColumn) {
+      this.changed = true;
+    }
+
+    if (this.taskSearchValues.sortDirection !== this.filterSortDirection) {
+      this.changed = true;
+    }
+
+    return this.changed;
+  }
+
+  initSortDirectionIcon() {
+    if (this.filterSortDirection === 'desc') {
+      this.sortIconName = this.iconNameDown;
+    } else {
+      this.sortIconName = this.iconNameUp;
+    }
+  }
+
+  changedSortDirection() {
+    if (this.filterSortDirection === 'asc') {
+      this.filterSortDirection = 'desc';
+    } else {
+      this.filterSortDirection = 'asc';
+    }
+
+    this.initSortDirectionIcon();
+  }
+
+  initSearchValues() {
+    if (!this.taskSearchValues) {
+      return;
+    }
+    this.filterTitle = this.taskSearchValues.title;
+    this.filterCompleted = this.taskSearchValues.completed;
+    this.filterPriorityId = this.taskSearchValues.priorityId;
+    this.filterSortColumn = this.taskSearchValues.sortColumn;
+    this.filterSortDirection = this.taskSearchValues.sortDirection;
+  }
+
+  clearSearchValues() {
+    this.filterTitle = '';
+    // @ts-ignore
+    this.filterCompleted = null;
+    // @ts-ignore
+    this.filterPriorityId = null;
+    this.filterSortColumn = this.defaultSortColumn;
+    this.filterSortDirection = this.defaultSortDirection;
+  }
+
+  onToggleSearch() {
+    this.toggleSearch.emit(!this.showSearch);
   }
 }

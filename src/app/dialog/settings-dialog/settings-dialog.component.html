@@ -4,13 +4,13 @@
   <p class="little subtitle">* При изменении - цвет сразу будет отображаться в таблице</p>
 
   <app-priorities [priorities]="priorities"
-                  (addPriority)="onAddPriority($event)"
-                  (deletePriority)="onDeletePriority($event)"
-                  (updatePriority)="onUpdatePriority($event)">
+                  (addPriority)="addPriority($event)"
+                  (deletePriority)="deletePriority($event)"
+                  (updatePriority)="updatePriority($event)">
   </app-priorities>
 
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <button mat-raised-button color="primary" (click)="onClose()">Закрыть</button>
+  <button mat-raised-button color="primary" (click)="close()">Закрыть</button>
 </mat-dialog-actions>

@@ -1,10 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DataHandlerService} from "../../service/data-handler.service";
 import {Category} from "../../model/category";
 import {EditCategoryDialogComponent} from "../../dialog/edit-category-dialog/edit-category-dialog.component";
 import {MatDialog} from "@angular/material/dialog";
-import {OpenType} from "../../dialog/open-type";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {CategorySearchValues} from "../../data/dao/search/SearchObjects";
+import {DialogAction} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-categories',
@@ -12,19 +12,25 @@ import {DeviceDetectorService} from "ngx-device-detector";
   styleUrls: ['./categories.component.css']
 })
 export class CategoriesComponent implements OnInit {
-
   // @ts-ignore
-  @Input() categories: Category[];
+  @Input('selectedCategory')
+  set setCategory(selectedCategory: Category) {
+    this.selectedCategory = selectedCategory;
+  }
 
-  // @ts-ignore
-  @Input() selectedCategory: Category;
+  @Input('categories')
+  set setCategories(categories: Category[]) {
+    this.categories = categories;
+  }
 
-  // @ts-ignore
-  @Input() uncompletedTotal: number;
+  @Input('categorySearchValues')
+  set setCategorySearchValues(categorySearchValues: CategorySearchValues) {
+    this.categorySearchValues = categorySearchValues;
+  }
 
-  @Input('categoryMap')
-  set setCategoryMap(categoryMap: Map<Category, number>) {
-    this.selectedCategoryMap = categoryMap;
+  @Input('uncompletedCountForCategoryAll')
+  set uncompletedCount(uncompletedCountForCategoryAll: number) {
+    this.uncompletedCountForCategoryAll = uncompletedCountForCategoryAll;
   }
 
   @Output()
@@ -34,36 +40,58 @@ export class CategoriesComponent implements OnInit {
   @Output()
   updateCategory = new EventEmitter<Category>();
   @Output()
-  addCategory = new EventEmitter<string>();
+  addCategory = new EventEmitter<Category>();
   @Output()
-  searchCategory = new EventEmitter<string>();
+  searchCategory = new EventEmitter<CategorySearchValues>();
 
+  // @ts-ignore
+  selectedCategory: Category;
 
   // @ts-ignore
   indexMouseMove: number;
   // @ts-ignore
-  searchCategoryTitle: string;
-  // @ts-ignore
-  selectedCategoryMap: Map<Category, number>;
+  showEditIconCategory: boolean;
 
   // @ts-ignore
   isMobile: boolean;
   // @ts-ignore
   isTablet: boolean;
 
-  constructor(private dataHandler: DataHandlerService,
-              private dialog: MatDialog,
+  // @ts-ignore
+  categories: Category[];
+
+  // @ts-ignore
+  categorySearchValues: CategorySearchValues;
+
+  // @ts-ignore
+  uncompletedCountForCategoryAll: number;
+
+  // @ts-ignore
+  filterTitle: string;
+  // @ts-ignore
+  filterChanged: boolean;
+
+  constructor(private dialog: MatDialog,
               private deviceService: DeviceDetectorService) {
     this.isMobile = deviceService.isMobile();
     this.isTablet = deviceService.isTablet();
   }
 
   ngOnInit(): void {
-    // this.dataHandler.getAllCategories()
-    //   .subscribe(categories => this.categories = categories);
   }
 
-  showTasksByCategory(category: Category | any): void {
+  search(): void {
+    this.filterChanged = false;
+
+    if (!this.categorySearchValues) {
+      return;
+    }
+
+    this.categorySearchValues.title = this.filterTitle;
+    this.searchCategory.emit(this.categorySearchValues);
+  }
+
+  showCategory(category: Category | any): void {
     if (this.selectedCategory === category) {
       return;
     }
@@ -72,47 +100,62 @@ export class CategoriesComponent implements OnInit {
     this.selectCategory.emit(this.selectedCategory);
   }
 
-  showEditIcon(index: number | any) {
+  showEditIcon(show: boolean, index: number) {
     this.indexMouseMove = index;
+    this.showEditIconCategory = show;
   }
 
-  openEditDialog(category: Category) {
-    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
-      data: [category.title, 'Редактирование категории', OpenType.EDIT],
-      width: '400px'
-    });
+  clearAndSearch() {
+    // @ts-ignore
+    this.filterTitle = null;
+    this.search();
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === 'delete') {
-        this.deleteCategory.emit(category);
-        return;
-      }
-      if (typeof (result) === 'string') {
-        category.title = result as string;
-        this.updateCategory.emit(category);
-        return;
-      }
-    });
+  checkFilterChanged(): boolean {
+    this.filterChanged = false;
+
+    if (this.filterTitle !== this.categorySearchValues.title) {
+      this.filterChanged = true;
+    }
+
+    return this.filterChanged;
   }
 
   openAddDialog(): void {
     const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
-      data: ['', 'Добавление категории', OpenType.ADD],
+      data: [new Category(null, ''), 'Добавление категории'],
       width: '400px'
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
+      if (!(result)) {
+        return;
+      }
+      if (result.action === DialogAction.SAVE) {
         // @ts-ignore
-        this.addCategory.emit(result as string);
+        this.addCategory.emit(result.obj as Category);
       }
     });
   }
 
-  search() {
-    if (this.searchCategoryTitle == null) {
-      return;
-    }
-    this.searchCategory.emit(this.searchCategoryTitle);
+  openEditDialog(category: Category) {
+    const dialogRef = this.dialog.open(EditCategoryDialogComponent, {
+      data: [new Category(category.id, category.title), 'Редактирование категории'],
+      width: '400px'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (!(result)) {
+        return;
+      }
+      if (result.action === DialogAction.DELETE) {
+        this.deleteCategory.emit(category);
+        return;
+      }
+      if (result.action === DialogAction.SAVE) {
+        this.updateCategory.emit(result.obj as Category);
+        return;
+      }
+    });
   }
 }

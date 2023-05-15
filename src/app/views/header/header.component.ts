@@ -3,6 +3,8 @@ import {MatDialog} from "@angular/material/dialog";
 import {SettingsDialogComponent} from "../../dialog/settings-dialog/settings-dialog.component";
 import {IntroService} from "../../service/intro.service";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {DialogAction} from "../../object/DialogResult";
+import {Priority} from "../../model/priority";
 
 @Component({
   selector: 'app-header',
@@ -23,6 +25,9 @@ export class HeaderComponent implements OnInit {
   @Output()
   toggleMenu = new EventEmitter();
 
+  @Output()
+  settingsChanged = new EventEmitter<Priority[]>();
+
   // @ts-ignore
   isMobile: boolean;
 
@@ -35,19 +40,26 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
   }
 
-  onToggleStat() {
-    this.toggleStat.emit(!this.showStat);
-  }
-
   showSettings() {
     const dialogRef = this.dialog.open(SettingsDialogComponent, {
       autoFocus: false,
       width: '500px'
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.action === DialogAction.SETTINGS_CHANGE) {
+        this.settingsChanged.emit(result.obj);
+        return;
+      }
+    });
   }
 
   showIntroHelp() {
     this.introService.startIntroJS(false);
+  }
+
+  onToggleStat() {
+    this.toggleStat.emit(!this.showStat);
   }
 
   onToggleMenu() {

@@ -16,15 +16,16 @@
          data-intro="Фильтрация задач, добавление, удаление, редактирование категорий"
          data-position='right'>
 
-      <app-categories (selectCategory)="onSelectCategory($event)"
-                      (deleteCategory)="onDeleteCategory($event)"
-                      (updateCategory)="onUpdateCategory($event)"
-                      (addCategory)="onAddCategory($event)"
-                      (searchCategory)="onSearchCategory($event)"
+      <app-categories (selectCategory)="selectCategory($event)"
+                      (deleteCategory)="deleteCategory($event)"
+                      (updateCategory)="updateCategory($event)"
+                      (addCategory)="addCategory($event)"
+                      (searchCategory)="searchCategory($event)"
+
                       [selectedCategory]="selectedCategory"
-                      [categoryMap]="categoryMap"
-                      [uncompletedTotal]="uncompletedTotalTasksCount"
-                      [categories]="categories">
+                      [uncompletedCountForCategoryAll]="uncompletedCountForCategoryAll"
+                      [categories]="categories"
+                      [categorySearchValues]="categorySearchValues">
       </app-categories>
 
     </div>
@@ -33,51 +34,45 @@
 
   <div ng-sidebar-content>
 
-    <div class="main-panel">
+    <div class="main-panel wrapper">
 
       <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
 
         <app-header [categoryName]="selectedCategory ? selectedCategory.title : 'Все'"
+                    [showStat]="showStat"
+
                     (toggleStat)="toggleStat($event)"
                     (toggleMenu)="toggleMenu()"
-                    [showStat]="showStat">
+                    (settingsChanged)="settingsChanged($event)">
         </app-header>
 
       </nav>
 
       <div class="content">
         <div class="container-fluid">
+          <app-stat
+            [dash]="dash"
+            [showStat]="showStat">
+          </app-stat>
 
-          <div data-step="2"
-               data-intro="Список всех задач со статистикой"
-               data-position='top'>
+          <app-tasks [tasks]="tasks"
+                     [totalTasksFounded]="totalTasksFounded"
+                     [selectedCategory]="selectedCategory"
+                     [priorities]="priorities"
+                     [categories]="categories"
+                     [showSearch]="showSearch"
+                     [taskSearchValues]="taskSearchValues"
 
-            <app-stat
-              [totalTasksInCategory]="totalTasksCountInCategory"
-              [completeTasksInCategory]="completedCountInCategory"
-              [uncompleteTasksInCategory]="uncompletedCountInCategory"
-              [showStat]="showStat">
-            </app-stat>
-          </div>
-
-          <div class="row">
-            <div class="col-12">
-
-              <app-tasks [tasks]="tasks"
-                         [priorities]="priorities"
-                         [selectedCategory]="selectedCategory"
-                         (addTask)="onAddTask($event)"
-                         (updateTask)="onUpdateTask($event)"
-                         (deleteTask)="onDeleteTask($event)"
-                         (filterByTitle)="onSearchTasks($event)"
-                         (filterByStatus)="onFilterTasksByStatus($event)"
-                         (filterByPriority)="onFilterTasksByPriority($event)"
-                         (selectCategory)="onSelectCategory($event)">
-              </app-tasks>
-
-            </div>
-          </div>
+                     (searchAction)="searchTasks($event)"
+                     (toggleSearch)="toggleSearch($event)"
+                     (selectCategory)="selectCategory($event)"
+                     (addTask)="addTask($event)"
+                     (deleteTask)="deleteTask($event)"
+                     (updateTask)="updateTask($event)"
+                     (paging)="paging($event)">
+          </app-tasks>
         </div>
+
       </div>
 
       <app-footer>

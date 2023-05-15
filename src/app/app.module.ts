@@ -34,6 +34,11 @@ import { PrioritiesComponent } from './views/priorities/priorities.component';
 import { EditPriorityDialogComponent } from './dialog/edit-priority-dialog/edit-priority-dialog.component';
 import {SidebarModule} from "ng-sidebar";
 import {DeviceDetectorService} from "ngx-device-detector";
+import {HttpClientModule} from "@angular/common/http";
+import {CATEGORY_URL_TOKEN} from "./data/dao/impl/category.service";
+import {TASK_URL_TOKEN} from "./data/dao/impl/task.service";
+import {PRIORITY_URL_TOKEN} from "./data/dao/impl/priority.service";
+import {STAT_URL_TOKEN} from "./data/dao/impl/stat.service";
 
 registerLocaleData(localeRu);
 
@@ -73,9 +78,26 @@ registerLocaleData(localeRu);
     MatCheckboxModule,
     ColorPickerModule,
     SidebarModule,
+    HttpClientModule,
   ],
   providers: [
-    DeviceDetectorService
+    DeviceDetectorService,
+    {
+      provide: TASK_URL_TOKEN,
+      useValue: 'http://localhost:8080/task'
+    },
+    {
+      provide: CATEGORY_URL_TOKEN,
+      useValue: 'http://localhost:8080/category'
+    },
+    {
+      provide: PRIORITY_URL_TOKEN,
+      useValue: 'http://localhost:8080/priority'
+    },
+    {
+      provide: STAT_URL_TOKEN,
+      useValue: 'http://localhost:8080/stat'
+    },
   ],
   entryComponents: [
     EditTaskDialogComponent,

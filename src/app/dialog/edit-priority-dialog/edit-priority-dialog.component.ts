@@ -1,7 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {OpenType} from "../open-type";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
+import {Priority} from "../../model/priority";
+import {DialogAction, DialogResult} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-edit-priority-dialog',
@@ -9,31 +10,32 @@ import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component
   styleUrls: ['./edit-priority-dialog.component.css']
 })
 export class EditPriorityDialogComponent implements OnInit {
-
   // @ts-ignore
   dialogTitle: string;
   // @ts-ignore
-  priorityTitle: string;
-  // @ts-ignore
-  openType: OpenType;
+  priority: Priority;
+  canDelete = false;
 
   constructor(private dialogRef: MatDialogRef<EditPriorityDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) private data: [string, string, OpenType],
+              @Inject(MAT_DIALOG_DATA) private data: [Priority, string],
               private dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.priorityTitle = this.data[0];
+    this.priority = this.data[0];
     this.dialogTitle = this.data[1];
-    this.openType = this.data[2];
+
+    if (this.priority && this.priority.id > 0) {
+      this.canDelete = true;
+    }
   }
 
-  onConfirm(): void {
-    this.dialogRef.close(this.priorityTitle);
+  confirm(): void {
+    this.dialogRef.close(new DialogResult(DialogAction.SAVE, this.priority));
   }
 
-  onCancel(): void {
-    this.dialogRef.close(false);
+  cancel(): void {
+    this.dialogRef.close(new DialogResult(DialogAction.CANCEL));
   }
 
   delete(): void {
@@ -41,19 +43,18 @@ export class EditPriorityDialogComponent implements OnInit {
       maxWidth: '500px',
       data: {
         dialogTitle: 'Подтвердите действие',
-        message: `Вы действительно хотите удалить приоритет: "${this.priorityTitle}"? (в задачи проставится '')`
+        message: `Вы действительно хотите удалить приоритет: "${this.priority.title}"? (в задачи проставится '')`
       },
       autoFocus: false
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.dialogRef.close('delete');
+      if (!(result)) {
+        return;
+      }
+      if (result.action === DialogAction.OK) {
+        this.dialogRef.close(new DialogResult(DialogAction.DELETE));
       }
     });
-  }
-
-  canDelete(): boolean {
-    return this.openType == OpenType.EDIT;
   }
 }

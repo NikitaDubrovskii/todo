@@ -14,10 +14,10 @@ export class StatCardComponent implements OnInit {
   @Input() iconName: string;
 
   @Input()
-  count1: any; // можно передавать любой тип для отображения (число, текст и пр.)
+  count1: any;
 
   @Input()
-  countTotal: any;
+  count2: any;
 
   // @ts-ignore
   @Input() title: string;

@@ -4,10 +4,10 @@
   <mat-form-field>
     <mat-label>Название (15 символов)</mat-label>
     <input #inputTitle matInput maxlength="15"
-           [(ngModel)]="categoryTitle" (keydown.enter)="onConfirm()">
-    <button *ngIf="categoryTitle.trim().length > 0" class="clear-icon size25"
-            MatButton matSuffix mat-icon-button aria-label="Clear"
-            (click)="categoryTitle= ''">
+           [(ngModel)]="category.title" (keydown.enter)="confirm()">
+    <button *ngIf="category.title.trim().length > 0" class="clear-icon size25"
+            matSuffix mat-icon-button aria-label="Clear"
+            (click)="category.title= ''">
       <mat-icon>clear</mat-icon>
     </button>
   </mat-form-field>
@@ -15,18 +15,18 @@
 
 <mat-dialog-actions>
   <div class="col-12 text-center">
-    <button mat-raised-button color="primary" (click)="onConfirm()"
+    <button mat-raised-button color="primary" (click)="confirm()"
             [disabled]="inputTitle.value.trim().length == 0">
       Сохранить
     </button>
 
-    <button mat-raised-button (click)="onCancel()">
+    <button mat-raised-button (click)="cancel()">
       Отмена
     </button>
   </div>
 
   <div class="col-12 text-center">
-    <button *ngIf="canDelete()" mat-button (click)="delete()" class="red">
+    <button *ngIf="canDelete" mat-button (click)="delete()" class="red">
       Удалить
     </button>
   </div>

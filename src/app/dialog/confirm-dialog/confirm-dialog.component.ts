@@ -1,12 +1,13 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {DialogAction, DialogResult} from "../../object/DialogResult";
 
 @Component({
   selector: 'app-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.css']
 })
-export class ConfirmDialogComponent {
+export class ConfirmDialogComponent implements OnInit{
 
   // @ts-ignore
   dialogTitle: string;
@@ -19,12 +20,15 @@ export class ConfirmDialogComponent {
     this.message = data.message;
   }
 
-  onConfirm(): void {
-    this.dialogRef.close(true);
+  ngOnInit(): void {
   }
 
-  onCancel(): void {
-    this.dialogRef.close(false);
+  confirm(): void {
+    this.dialogRef.close(new DialogResult(DialogAction.OK));
+  }
+
+  cancel(): void {
+    this.dialogRef.close(new DialogResult(DialogAction.CANCEL));
   }
 
 }
